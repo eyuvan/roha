@@ -1,0 +1,25 @@
+body { font-family: 'Segoe UI', sans-serif; background-color: #1a1a1a; color: white; margin: 0; padding: 12px; padding-bottom: 90px; text-align: center; }
+.small-title { font-size: 16px !important; margin: 3px 0 !important; color: #ffa500; }
+.header-container { background-color: #2c2c2c; padding: 6px; border-radius: 10px; margin-bottom: 10px; }
+#timer-box { font-size: 14px; color: #ff4757; font-weight: bold; }
+#live-screen { font-size: 20px; background: #000; color: #2ed573; padding: 6px; margin-top: 5px; border-radius: 5px; border: 2px solid #2ed573; }
+.cartela-container { display: grid; grid-template-columns: repeat(8, 1fr) !important; gap: 3px !important; max-height: 260px; overflow-y: auto; background: #222; padding: 6px; border-radius: 8px; }
+.cartela-box { background-color: #3a3a3a; padding: 4px 1px !important; font-size: 9.5px !important; border-radius: 3px; cursor: pointer; font-weight: bold; }
+.cartela-box.selected { background-color: #ffa500; color: black; }
+.board-columns { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; background: #111; padding: 8px; border-radius: 8px; }
+.column { background: #222; border-radius: 5px; padding: 4px 0; }
+.col-letter { font-size: 18px; font-weight: bold; color: #ffa500; border-bottom: 2px solid #333; }
+.col-numbers { display: flex; flex-direction: column; gap: 3px; font-size: 11px; }
+.board-num { background: #333; color: #aaa; padding: 1px 0; border-radius: 2px; }
+.board-num.highlighted { background-color: #2ed573 !important; color: #000 !important; transform: scale(1.05); }
+.wallet-box { background: #2c2c2c; padding: 12px; border-radius: 10px; }
+.wallet-item { background: #111; padding: 10px; margin-bottom: 8px; border-radius: 8px; border-left: 4px solid #ffa500; }
+.wallet-item p { font-size: 20px; color: #2ed573; margin: 0; font-weight: bold; }
+.deposit-box { background: #1e272e; border: 2px dashed #ffa500; padding: 12px; border-radius: 10px; margin-top: 12px; }
+.phone-number { font-size: 22px; color: #ffa500; font-weight: bold; background: #000; padding: 6px; border-radius: 5px; display: inline-block; }
+.grid-5x5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; max-width: 240px; margin: 10px auto; background: white; padding: 4px; border-radius: 5px; }
+.grid-cell { background: #333; color: white; padding: 6px; font-weight: bold; font-size: 12px; }
+.navbar { position: fixed; bottom: 0; left: 0; width: 100%; background: #111; display: flex; justify-content: space-around; padding: 12px 0; border-top: 2px solid #333; z-index: 100; }
+.nav-item { background: none; border: none; color: #888; font-size: 14px; cursor: pointer; }
+.nav-item.active { color: #ffa500; font-weight: bold; }
+.hidden { display: none !important; }
