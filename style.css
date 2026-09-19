@@ -3,93 +3,101 @@ body {
     background-color: #1a1a1a;
     color: white;
     margin: 0;
-    padding: 10px;
+    padding: 4px;
     padding-bottom: 90px;
     text-align: center;
 }
 
-/* 1. የላይኛው የርዕስ መጠን እንዲያንስ የተደረገ ማሻሻያ */
+/* 🎰 1ኛ ማሻሻያ፦ የርዕስ መጠን በጣም እጅግ አነስተኛ */
 .small-title, h1 {
-    font-size: 15px !important; 
-    margin: 3px 0 !important;
+    font-size: 10px !important; 
+    margin: 1px 0 !important;
     color: #ffa500;
+    font-weight: normal;
+    letter-spacing: 0.5px;
 }
 
 .header-container {
     background-color: #2c2c2c;
-    padding: 6px;
-    border-radius: 8px;
-    margin-bottom: 10px;
+    padding: 3px;
+    border-radius: 4px;
+    margin-bottom: 4px;
 }
 
+/* ⏳ 2ኛ ማሻሻያ፦ የሁኔታ መግለጫ ጽሑፍ መጠን ማነስ */
 #timer-box {
-    font-size: 13px;
+    font-size: 9px !important;
     color: #ff4757;
     font-weight: bold;
+    margin: 1px 0;
 }
 
 #live-screen {
-    font-size: 18px;
+    font-size: 13px;
     background: #000;
     color: #2ed573;
-    padding: 6px;
-    margin-top: 4px;
-    border-radius: 5px;
-    border: 2px solid #2ed573;
+    padding: 3px;
+    margin-top: 1px;
+    border-radius: 3px;
+    border: 1px solid #2ed573;
 }
 
-/* 2. የ 1-600 ካርቴላዎች መያዣ (በአንድ መስመር 10 ሳጥን እንዲሆን የተደረገ ማሻሻያ) */
+/* 📦 3ኛ ማሻሻያ፦ የ 1-600 ካርቴላዎች መያዣ (በአንድ መስመር 15 ሳጥን) */
 .cartela-container {
     display: grid;
-    grid-template-columns: repeat(10, 1fr) !important; /* በአንድ መስመር 10 ሳጥን እንዲወጣ ተደረገ */
-    gap: 2.5px !important; /* በሳጥኖቹ መካከል ያለው ክፍተት ይበልጥ አነሰ */
-    max-height: 250px;
+    grid-template-columns: repeat(15, 1fr) !important; /* በአንድ መስመር 15 ሳጥኖች እንዲደረደሩ */
+    gap: 1px !important; /* በሳጥኖቹ መካከል ያለው ክፍተት እጅግ በጣም ጠባብ */
+    max-height: 200px;
     overflow-y: auto;
     background: #222;
-    padding: 6px;
-    border-radius: 8px;
+    padding: 3px;
+    border-radius: 4px;
 }
 
-/* 3. የካርቴላ ቁጥሮች ሳጥን ስታይል (መጠኑ በጣም እጅግ በጣም አነስ የተደረገ) */
+/* 🔢 3ኛ ማሻሻያ፦ የካርቴላ ቁጥሮች እና ሳጥኖች መጠን (እጅግ በጣም ጥቃቅን - Micro Size) */
 .cartela-box {
     background-color: #3a3a3a;
-    padding: 3px 0px !important;  /* የሳጥኑ ቁመት እጅግ በጣም እንዲያንስ */
-    font-size: 8px !important;    /* የ 1-600 ቁጥሮች መጠን በጣም አነስ እንዲል */
-    border-radius: 2px;
+    padding: 1px 0px !important;  /* የሳጥኑ ቁመት እጅግ በጣም አነስተኛ */
+    font-size: 6px !important;     /* የውስጡ ቁጥሮች መጠን እጅግ በጣም ጥቃቅን */
+    border-radius: 1px;
     cursor: pointer;
-    font-weight: bold;
+    font-weight: normal;
     transition: 0.1s;
+    line-height: 1;
 }
 
 .cartela-box.selected {
     background-color: #ffa500;
     color: black;
+    font-weight: bold;
 }
 
-/* የቢንጎ ማሳያ ሰሌዳዎች እና ሌሎች ዲዛይኖች */
+/* የቢንጎ ሰሌዳ እና አምዶች ዲዛይን */
 .board-columns {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    gap: 4px;
+    gap: 2px;
     background: #111;
-    padding: 8px;
-    border-radius: 8px;
-    margin-bottom: 12px;
+    padding: 4px;
+    border-radius: 4px;
+    margin-bottom: 8px;
 }
 
-.column { background: #222; border-radius: 5px; padding: 4px 0; }
-.col-letter { font-size: 18px; font-weight: bold; color: #ffa500; border-bottom: 2px solid #333; padding-bottom: 4px; margin-bottom: 4px; }
-.col-numbers { display: flex; flex-direction: column; gap: 3px; padding: 0 4px; }
-.board-num { font-size: 11px; background: #333; color: #aaa; padding: 2px 0; border-radius: 2px; font-weight: bold; }
-.board-num.highlighted { background-color: #2ed573 !important; color: #000 !important; transform: scale(1.05); }
-.wallet-box { background: #2c2c2c; padding: 12px; border-radius: 10px; }
-.wallet-item { background: #111; padding: 10px; margin-bottom: 8px; border-radius: 8px; border-left: 4px solid #ffa500; }
-.wallet-item p { font-size: 20px; color: #2ed573; margin: 4px 0 0 0; font-weight: bold; }
-.deposit-box { background: #1e272e; border: 2px dashed #ffa500; padding: 12px; border-radius: 10px; margin-top: 12px; }
-.phone-number { font-size: 22px; color: #ffa500; font-weight: bold; background: #000; padding: 6px; border-radius: 5px; display: inline-block; }
-.grid-5x5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; max-width: 240px; margin: 10px auto; background: white; padding: 4px; border-radius: 5px; }
-.grid-cell { background: #333; color: white; padding: 6px; font-weight: bold; font-size: 12px; border-radius: 2px; }
-.navbar { position: fixed; bottom: 0; left: 0; width: 100%; background: #111; display: flex; justify-content: space-around; padding: 12px 0; border-top: 2px solid #333; z-index: 100; }
-.nav-item { background: none; border: none; color: #888; font-size: 14px; cursor: pointer; }
+.column { background: #222; border-radius: 3px; padding: 1px 0; }
+.col-letter { font-size: 12px; font-weight: bold; color: #ffa500; border-bottom: 1px solid #333; padding-bottom: 1px; margin-bottom: 2px; }
+.col-numbers { display: flex; flex-direction: column; gap: 1px; padding: 0 1px; }
+.board-num { font-size: 8px; background: #333; color: #aaa; padding: 1px 0; border-radius: 1px; }
+.board-num.highlighted { background-color: #2ed573 !important; color: #000 !important; transform: scale(1.02); }
+
+/* የዋሌት እና የኔቪጌชั่น ባር ዲዛይኖች */
+.wallet-box { background: #2c2c2c; padding: 8px; border-radius: 6px; }
+.wallet-item { background: #111; padding: 6px; margin-bottom: 4px; border-radius: 4px; border-left: 2px solid #ffa500; }
+.wallet-item p { font-size: 16px; color: #2ed573; margin: 1px 0 0 0; font-weight: bold; }
+.deposit-box { background: #1e272e; border: 1px dashed #ffa500; padding: 8px; border-radius: 6px; margin-top: 8px; }
+.phone-number { font-size: 18px; color: #ffa500; font-weight: bold; background: #000; padding: 3px; border-radius: 3px; display: inline-block; }
+.grid-5x5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 2px; max-width: 200px; margin: 6px auto; background: white; padding: 2px; border-radius: 3px; }
+.grid-cell { background: #333; color: white; padding: 3px; font-weight: bold; font-size: 9px; border-radius: 1px; }
+.navbar { position: fixed; bottom: 0; left: 0; width: 100%; background: #111; display: flex; justify-content: space-around; padding: 8px 0; border-top: 1px solid #333; z-index: 100; }
+.nav-item { background: none; border: none; color: #888; font-size: 12px; cursor: pointer; }
 .nav-item.active { color: #ffa500; font-weight: bold; }
 .hidden { display: none !important; }
