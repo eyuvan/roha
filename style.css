@@ -8,7 +8,7 @@ body {
     text-align: center;
 }
 
-/* 🎰 1ኛ ማሻሻያ፦ የርዕስ መጠን በጣም እጅግ አነስተኛ */
+/* 🎰 1ኛ ማሻሻያ፦ የእድል ቢንጎ ርዕስ መጠን እጅግ በጣም ጥቃቅን እንዲሆን */
 .small-title, h1 {
     font-size: 10px !important; 
     margin: 1px 0 !important;
@@ -24,7 +24,6 @@ body {
     margin-bottom: 4px;
 }
 
-/* ⏳ 2ኛ ማሻሻያ፦ የሁኔታ መግለጫ ጽሑፍ መጠን ማነስ */
 #timer-box {
     font-size: 9px !important;
     color: #ff4757;
@@ -42,11 +41,11 @@ body {
     border: 1px solid #2ed573;
 }
 
-/* 📦 3ኛ ማሻሻያ፦ የ 1-600 ካርቴላዎች መያዣ (በአንድ መስመር 15 ሳጥን) */
+/* 📦 2ኛ ማሻሻያ፦ የ 1-600 ካርቴላዎች መያዣ ሰሌዳ (በአንድ መስመር 15 ሳጥን እንዲሰለፍ) */
 .cartela-container {
     display: grid;
     grid-template-columns: repeat(15, 1fr) !important; /* በአንድ መስመር 15 ሳጥኖች እንዲደረደሩ */
-    gap: 1px !important; /* በሳጥኖቹ መካከል ያለው ክፍተት እጅግ በጣም ጠባብ */
+    gap: 1px !important; /* በሳጥኖቹ መካከል ያለው ክፍተት እጅግ በጣም ጠባብ እንዲሆን */
     max-height: 200px;
     overflow-y: auto;
     background: #222;
@@ -54,11 +53,11 @@ body {
     border-radius: 4px;
 }
 
-/* 🔢 3ኛ ማሻሻያ፦ የካርቴላ ቁጥሮች እና ሳጥኖች መጠን (እጅግ በጣም ጥቃቅን - Micro Size) */
+/* 🔢 2ኛ ማሻሻያ፦ የካርቴላ ቁጥሮች እና ሳጥኖች መጠን እጅግ በጣም ጥቃቅን (Micro Size) */
 .cartela-box {
     background-color: #3a3a3a;
     padding: 1px 0px !important;  /* የሳጥኑ ቁመት እጅግ በጣም አነስተኛ */
-    font-size: 6px !important;     /* የውስጡ ቁጥሮች መጠን እጅግ በጣም ጥቃቅን */
+    font-size: 6.5px !important;   /* የውስጡ ቁጥሮች መጠን እጅግ በጣም ጥቃቅን */
     border-radius: 1px;
     cursor: pointer;
     font-weight: normal;
