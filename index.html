@@ -2,25 +2,36 @@
 <html lang="am">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=0.5">
-    <title>->እድል ቢንጎ - Lucky Bingo</title>
-    <link rel="stylesheet" href="style.css?v=1.1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>እድል ቢንጎ - Lucky Bingo</title>
+    <link rel="stylesheet" href="style.css?v=1.2">
 </head>
 <body>
     <div class="header-container">
-        <h5 class="small-title"></h5>
-        <div id="timer-box">የቀረው ጊዜ: <span id="timer">49</span>sec</div>
-        <div id="live-screen">የተጠራ ቁጥር: <span id="called-number">--</span></div>
+        <h5 class="small-title">እድል ቢንጎ (Lucky Bingo)</h5>
+        <div id="timer-box"><span id="timer">49</span> ሰከንድ</div>
+        <div id="live-screen"><span id="called-number">--</span></div>
     </div>
 
+    <!-- የቢንጎ 5x5 ካርቴላ ማሳያ -->
     <div id="selected-cartela-display" class="hidden">
-        <h3>የእርስዎ ካርቴላ (5x5)</h3>
+        <h5>የእርስዎ ካርቴላ (5x5)</h5>
         <div id="bingo-grid" class="grid-5x5"></div>
     </div>
 
     <div id="game-tab" class="tab-content">
+        <!-- 💥 አዲስ የተጨመረ፦ የ 10 ብር እና 20 ብር መጫወቻ ምርጫ ሰሌዳ -->
+        <div id="bet-selection-container" class="bet-container">
+            <h3>የመወራረጃ መጠን ይምረጡ</h3>
+            <div class="bet-buttons">
+                <button id="btn-bet-10" class="bet-btn active" onclick="setBetAmount(10)">10 ብር</button>
+                <button id="btn-bet-20" class="bet-btn" onclick="setBetAmount(20)">20 ብር</button>
+            </div>
+            <p class="bet-info">የተመረጠ መወራረጃ፦ <span id="current-bet-display">10</span> ብር</p>
+        </div>
+
         <div id="bingo-board" class="hidden">
-            <h4>የተጠሩ ቁጥሮች ሰሌዳ</h4>
+            <h3>የተጠሩ ቁጥሮች ሰሌዳ</h3>
             <div class="board-columns">
                 <div class="column"><div class="col-letter">B</div><div id="col-B" class="col-numbers"></div></div>
                 <div class="column"><div class="col-letter">I</div><div id="col-I" class="col-numbers"></div></div>
@@ -34,7 +45,7 @@
     </div>
 
     <div id="wallet-tab" class="tab-content hidden">
-        <h5>የእርስዎ የገንዘብ ቦርሳ (Wallet) 💳</h5>
+        <h2>የእርስዎ የገንዘብ ቦርሳ (Wallet) 💳</h2>
         <div class="wallet-box">
             <div class="wallet-item"><h3>Main Wallet</h3><p id="main-wallet-amount">10.00 ብር</p></div>
             <div class="wallet-item"><h3>Play Wallet</h3><p id="play-wallet-amount">0.00 ብር</p></div>

@@ -100,3 +100,50 @@ body {
 .nav-item { background: none; border: none; color: #888; font-size: 12px; cursor: pointer; }
 .nav-item.active { color: #ffa500; font-weight: bold; }
 .hidden { display: none !important; }
+/* የመወራረጃ በተኖች ዲዛይን */
+.bet-container {
+    background: #222;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #333;
+}
+.bet-container h3 {
+    font-size: 13px;
+    margin: 0 0 8px 0;
+    color: #eee;
+}
+.bet-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+.bet-btn {
+    background: #444;
+    color: white;
+    border: none;
+    padding: 6px 16px;
+    font-size: 13px;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.bet-btn.active {
+    background: #ffa500;
+    color: black;
+    box-shadow: 0 0 8px #ffa500;
+}
+.bet-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+.bet-info {
+    font-size: 11px;
+    color: #aaa;
+    margin: 6px 0 0 0;
+}
+#current-bet-display {
+    color: #ffa500;
+    font-weight: bold;
+}

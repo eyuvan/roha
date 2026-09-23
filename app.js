@@ -1,8 +1,9 @@
 let selectedCartelas = [];
 let timeLeft = 49;
 let selectionOpen = true;
+let betAmount = 10; // 💥 መነሻ የመወራረጃ መጠን 10 ብር
 
-// 💥 የእርስዎን ኮምፒውተር አይፒ አድራሻ እዚህ ያስገቡ
+// 💥 የፓይተን ሰርቨር መገናኛ ሊንክ (አይፒ አድራሻህ)
 const API_BASE_URL = "http://192.168.125.45:5000"; 
 const urlParams = new URLSearchParams(window.location.search);
 const TelegramUserID = urlParams.get('user_id') || "12345"; 
@@ -13,6 +14,21 @@ window.onload = function() {
     startCountdown(); 
     loadRealBalance();
 };
+
+// 💥 አዲስ የተጨመረ፦ የመወራረጃ መጠንን (10 ብር ወይም 20 ብር) መቀየሪያ
+function setBetAmount(amount) {
+    if (selectedCartelas.length > 0) {
+        alert("ማሳሰቢያ፦ ካርቴላ መምረጥ ስለጀመሩ የመወራረጃ መጠን መቀየር አይችሉም!");
+        return;
+    }
+    betAmount = amount;
+    document.getElementById('current-bet-display').innerText = amount;
+    
+    // የበተኖቹን ከለር ማስተካከያ
+    document.getElementById('btn-bet-10').classList.remove('active');
+    document.getElementById('btn-bet-20').classList.remove('active');
+    document.getElementById('btn-bet-' + amount).classList.add('active');
+}
 
 function createAllCartelas() {
     const cartelaList = document.getElementById('cartela-list');
@@ -28,6 +44,7 @@ function createAllCartelas() {
     }
 }
 
+// 💥 ከፓይተን ዳታቤዝ ላይ እውነተኛውን ባላንስ አምጥቶ ማሳያ API
 function loadRealBalance() {
     fetch(${API_BASE_URL}/api/get_balance?user_id=${TelegramUserID})
         .then(res => res.json())
@@ -36,14 +53,15 @@ function loadRealBalance() {
             const playW = document.getElementById('play-wallet-amount');
             if (mainW) mainW.innerText = data.main_wallet.toFixed(2) + " ብር";
             if (playW) playW.innerText = data.play_wallet.toFixed(2) + " ብር";
-        }).catch(err => console.log(err));
+        }).catch(err => console.log("የባላንስ ግንኙነት ስህተት፦", err));
 }
 
+// 💥 ካርቴላ በተመረጠ ቁጥር በተመረጠው መጠን (10 ወይም 20) ከዳታቤዝ ላይ ብር የሚቀንስ API
 function buyCartelaOnDatabase() {
     fetch(${API_BASE_URL}/api/buy_cartela, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_id: TelegramUserID })
+        body: JSON.stringify({ user_id: TelegramUserID, bet_amount: betAmount })
     })
     .then(res => res.json())
     .then(data => {
@@ -52,13 +70,16 @@ function buyCartelaOnDatabase() {
             document.getElementById('play-wallet-amount').innerText = data.play_wallet.toFixed(2) + " ብር";
         } else {
             alert(data.message);
+            // ብር ከሌለው ምርጫውን በፈርንትአንድ ላይ መሰረዝ
+            location.reload();
         }
-    }).catch(err => console.log(err));
+    }).catch(err => console.log("የመግዣ ግንኙነት ስህተት፦", err));
 }
 
 function selectCartela(id, element) {
     if (!selectionOpen) return;
     if (selectedCartelas.includes(id)) {
+        // ካርቴላውን መልሶ የመሰረዝ ህግ (በቀጣይ የብር መመለሻ API ይደረግለታል)
         selectedCartelas = selectedCartelas.filter(item => item !== id);
         element.classList.remove('selected');
     } else {
@@ -66,7 +87,14 @@ function selectCartela(id, element) {
             alert("መምረጥ የሚችሉት እስከ 5 ካርቴላ ብቻ ነው!");
             return;
         }
-        buyCartelaOnDatabase(); // 💥 ካርቴላ ሲመረጥ ብር ይቀንሳል
+        
+        // 💥 ካርቴላ በተጫነ ቁጥር የመረጠውን የመወራረጃ ብር (10 ወይም 20) በAPI መቀነስ
+        buyCartelaOnDatabase();
+        
+        // የመወራረጃ ሰሌዳውን እንዳይቀይሩት መቆለፍ
+        document.getElementById('btn-bet-10').disabled = true;
+        document.getElementById('btn-bet-20').disabled = true;
+
         selectedCartelas.push(id);
         element.classList.add('selected');
         generate5x5Grid(); 
@@ -76,7 +104,7 @@ function selectCartela(id, element) {
 function generate5x5Grid() {
     const grid = document.getElementById('bingo-grid');
     if (document.getElementById('selected-cartela-display')) document.getElementById('selected-cartela-display').classList.remove('hidden');
-    if (grid) {
+	if (grid) {
         grid.innerHTML = '';
         for (let i = 1; i <= 25; i++) {
             let cell = document.createElement('div');
@@ -98,6 +126,7 @@ function startCountdown() {
             document.getElementById('timer-box').innerText = "ምርጫ ተዘግቷል! ጨዋታው ተጀምሯል...";
             document.getElementById('cartela-list').classList.add('hidden');
             document.getElementById('select-title').classList.add('hidden');
+            document.getElementById('bet-selection-container').classList.add('hidden'); // መወራረጃውን መደበቅ
             document.getElementById('bingo-board').classList.remove('hidden');
             startBingoCalling(); 
         }
@@ -105,7 +134,7 @@ function startCountdown() {
 }
 
 function setupBingoBoardNumbers() {
-	const columns = {'B': {s:1, e:15, id:'col-B'}, 'I': {s:16, e:30, id:'col-I'}, 'N': {s:31, e:45, id:'col-N'}, 'G': {s:46, e:60, id:'col-G'}, 'O': {s:61, e:75, id:'col-O'}};
+    const columns = {'B': {s:1, e:15, id:'col-B'}, 'I': {s:16, e:30, id:'col-I'}, 'N': {s:31, e:45, id:'col-N'}, 'G': {s:46, e:60, id:'col-G'}, 'O': {s:61, e:75, id:'col-O'}};
     for (let key in columns) {
         let col = columns[key];
         let el = document.getElementById(col.id);
