@@ -4,7 +4,8 @@ let selectionOpen = true;
 let betAmount = 10; // 💥 መነሻ የመወራረጃ መጠን 10 ብር
 
 // 💥 የፓይተን ሰርቨር መገናኛ ሊንክ (አይፒ አድራሻህ)
-const API_BASE_URL = "http://192.168.125.45:5000"; 
+// ✅ አሁን የምትተካው ትክክለኛው አዲሱ ሊንክ (በፎቶው መሰረት)፦
+const API_BASE_URL = "http://192.168.83.45:5000";
 const urlParams = new URLSearchParams(window.location.search);
 const TelegramUserID = urlParams.get('user_id') || "12345"; 
 
