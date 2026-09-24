@@ -10,10 +10,10 @@ from telegram.ext import Application, CommandHandler, MessageHandler, filters, C
 # ⚠️ 1. የእርስዎን መረጃዎች እዚህ በትክክል ያስገቡ
 # ከBotFather ያገኘኸውን አዲሱን ቶከን እዚህ ሳጥን ውስጥ ብቻ ተካው
 BOT_TOKEN = "8991112828:AAGDaTtFAccldDfn-FF2GK2WG2l3rN2UKTo"
-WEB_APP_URL = "https://eyuvan.github.io/edlbingo/" 
-ADMIN_ID = 123456789  # የራስህን የቴሌግราม ID ቁጥር እዚህ ተካው
+WEB_APP_URL = "https://github.io" 
+ADMIN_ID = 400234494  # የራስህን የቴሌግราม ID ቁጥር እዚህ ተካው
 
-PORT = int(os.environ.get('PORT', 5000))
+PORT = int(os.environ.get('PORT', 8000))
 
 # ----------------- 2. የዳታቤዝ አወቃቀር -----------------
 def init_db():
