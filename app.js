@@ -7,27 +7,30 @@ let gameId = 1;
 let countdown = 49;
 let timerInterval = null;
 
-// Initial Setup
-document.addEventListener("DOMContentLoaded", () => {
+// Page Initialization
+window.onload = function() {
     generateCartelaGrid();
-    startCountdown();
     setupBingoBoard();
-});
+    startCountdown();
+    updateUIWalletValues();
+};
 
-// Generate 1 to 600 Cartelas
+// 1. Generate 1 to 600 Cartelas
 function generateCartelaGrid() {
     const grid = document.getElementById("cartela-grid");
+    if (!grid) return;
+    
     grid.innerHTML = "";
     for (let i = 1; i <= 600; i++) {
         const box = document.createElement("div");
         box.className = "cartela-box";
         box.innerText = i;
-        box.onclick = () => selectCartela(i, box);
+        box.onclick = function() { selectCartela(i, box); };
         grid.appendChild(box);
     }
 }
 
-// Handle Cartela Selection Max 3
+// 2. Handle Cartela Selection (Max 3)
 function selectCartela(num, element) {
     if (selectedCartelas.includes(num)) {
         selectedCartelas = selectedCartelas.filter(id => id !== num);
@@ -40,30 +43,44 @@ function selectCartela(num, element) {
         selectedCartelas.push(num);
         element.classList.add("selected");
     }
-    document.getElementById("selected-count").innerText = selectedCartelas.length;
+    const countEl = document.getElementById("selected-count");
+    if (countEl) countEl.innerText = selectedCartelas.length;
 }
 
-// Tab Switching Navigation
+// 3. Tab Switching Navigation Logic
 function switchTab(tabName) {
+    // Hide all screens
     document.querySelectorAll(".screen").forEach(s => s.classList.add("hidden"));
+    // Remove active class from buttons
     document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
     
     if (tabName === 'game') {
-        document.getElementById("selection-screen").classList.remove("hidden");
+        // If 'Game' is clicked, show selection screen or live screen depending on countdown
+        if (countdown > 0) {
+            document.getElementById("selection-screen").classList.remove("hidden");
+        } else {
+            document.getElementById("game-screen").classList.remove("hidden");
+        }
+        document.getElementById("btn-game").classList.add("active");
     } else {
-        document.getElementById(${tabName}-screen).classList.remove("hidden");
+        const activeScreen = document.getElementById(${tabName}-screen);
+        const activeBtn = document.getElementById(btn-${tabName});
+        if (activeScreen) activeScreen.classList.remove("hidden");
+        if (activeBtn) activeBtn.classList.add("active");
     }
-    // Update visual tab activation button
 }
 
-// Countdown Logic (49 seconds)
+// 4. Countdown Logic (49 seconds)
 function startCountdown() {
     countdown = 49;
-    document.getElementById("countdown").innerText = countdown;
+    const timerEl = document.getElementById("countdown");
+    if (timerEl) timerEl.innerText = countdown + "s";
     
+    if (timerInterval) clearInterval(timerInterval);
+
     timerInterval = setInterval(() => {
         countdown--;
-        document.getElementById("countdown").innerText = countdown;
+        if (timerEl) timerEl.innerText = countdown + "s";
         
         if (countdown <= 0) {
             clearInterval(timerInterval);
@@ -72,36 +89,40 @@ function startCountdown() {
     }, 1000);
 }
 
-// Transition Screen when Timer Hits 0
+// 5. Switch Screen when Timer Hits 0
 function transitionToBingoGame() {
-    document.getElementById("selection-screen").classList.add("hidden");
-    document.getElementById("game-screen").classList.remove("hidden");
+    const selectionScreen = document.getElementById("selection-screen");
+    const gameScreen = document.getElementById("game-screen");
     
-    // Format Game ID to 0001 format
-    document.getElementById("game-id").innerText = String(gameId).padStart(4, '0');
+    if (selectionScreen) selectionScreen.classList.add("hidden");
+    if (gameScreen) gameScreen.classList.remove("hidden");
+    
+    const gameIdEl = document.getElementById("game-id");
+    if (gameIdEl) gameIdEl.innerText = String(gameId).padStart(4, '0');
     
     renderActiveMatrices();
     startCallingNumbers();
 }
 
-// Generate 5x5 Matrix for selected items
+// 6. Generate 5x5 Matrix for selected cartelas
 function renderActiveMatrices() {
     const container = document.getElementById("active-cartelas-display");
+    if (!container) return;
     container.innerHTML = "";
     
-    if(selectedCartelas.length === 0) {
-        container.innerHTML = "<p style='color:red;'>ምንም ካርቴላ አልመረጡም! እባክዎ ቀጣዩን ጨዋታ ይጠብቁ።</p>";
+    if (selectedCartelas.length === 0) {
+        container.innerHTML = "<p style='color:#ff3b30; text-align:center; font-weight:bold;'>ምንም ካርቴላ አልመረጡም! እባክዎ ቀጣዩን ጨዋታ ይጠብቁ።</p>";
         return;
     }
-
-    selectedCartelas.forEach(id => {
+	selectedCartelas.forEach(id => {
         const wrap = document.createElement("div");
-        wrap.innerHTML = <h4>📋 ካርቴላ #${id}</h4>;
+        wrap.style.marginTop = "15px";
+        wrap.innerHTML = <h4 style='color:#ffcc00; margin:5px 0;'>📋 የመረጡት ካርቴላ #${id}</h4>;
+        
         const matrix = document.createElement("div");
         matrix.className = "matrix-5x5";
         
-        // Populate 25 elements mock numbers
-        for(let i=0; i<25; i++) {
+        for (let i = 0; i < 25; i++) {
             const cell = document.createElement("div");
             cell.className = "matrix-cell";
             cell.innerText = Math.floor(Math.random() * 75) + 1;
@@ -112,22 +133,35 @@ function renderActiveMatrices() {
     });
 }
 
-// Initialize Board Columns
+// 7. Initialize Board Columns Structure
 function setupBingoBoard() {
-    for(let i=1; i<=15; i++) document.getElementById("col-B").innerHTML += <span id="num-${i}">${i}</span>;
-    for(let i=16; i<=30; i++) document.getElementById("col-I").innerHTML += <span id="num-${i}">${i}</span>;
-	for(let i=31; i<=45; i++) document.getElementById("col-N").innerHTML += <span id="num-${i}">${i}</span>;
-    for(let i=46; i<=60; i++) document.getElementById("col-G").innerHTML += <span id="num-${i}">${i}</span>;
-    for(let i=61; i<=75; i++) document.getElementById("col-O").innerHTML += <span id="num-${i}">${i}</span>;
+    const cols = {
+        "B": { start: 1, end: 15 },
+        "I": { start: 16, end: 30 },
+        "N": { start: 31, end: 45 },
+        "G": { start: 46, end: 60 },
+        "O": { start: 61, end: 75 }
+    };
+    
+    for (let key in cols) {
+        const colEl = document.getElementById(col-${key});
+        if (colEl) {
+            colEl.innerHTML = "";
+            for (let i = cols[key].start; i <= cols[key].end; i++) {
+                colEl.innerHTML += <span id="num-${i}">${i}</span>;
+            }
+        }
+    }
 }
 
-// Simulation for calling numbers
+// 8. Simulation for calling bingo numbers
 function startCallingNumbers() {
     let pool = Array.from({length: 75}, (_, i) => i + 1);
     let calledCount = 0;
+    const liveBallEl = document.getElementById("live-ball-screen");
     
     let callInterval = setInterval(() => {
-        if (pool.length === 0 || calledCount >= 15) { // Call 15 numbers as a demo
+        if (pool.length === 0 || calledCount >= 10) { 
             clearInterval(callInterval);
             resetToNextGame();
             return;
@@ -138,33 +172,42 @@ function startCallingNumbers() {
         calledCount++;
         
         let letter = "";
-        if(num <= 15) letter = "B";
-        else if(num <= 30) letter = "I";
-        else if(num <= 45) letter = "N";
-        else if(num <= 60) letter = "G";
+        if (num <= 15) letter = "B";
+        else if (num <= 30) letter = "I";
+        else if (num <= 45) letter = "N";
+        else if (num <= 60) letter = "G";
         else letter = "O";
         
-        // Show in screen
-        document.getElementById("live-ball-screen").innerText = ${letter} - ${num};
+        if (liveBallEl) liveBallEl.innerText = ${letter} - ${num};
         
-        // Cross out on structural list board
         let boardNum = document.getElementById(num-${num});
-        if(boardNum) boardNum.className = "called-num";
+        if (boardNum) boardNum.className = "called-num";
         
-    }, 3000); // Calls every 3 seconds
+    }, 3000); 
 }
 
 function resetToNextGame() {
     setTimeout(() => {
         gameId++;
         selectedCartelas = [];
-        document.getElementById("selected-count").innerText = "0";
+        const countEl = document.getElementById("selected-count");
+        if (countEl) countEl.innerText = "0";
+        
         document.getElementById("game-screen").classList.add("hidden");
         document.getElementById("selection-screen").classList.remove("hidden");
         
-        // Reset Board classes
         document.querySelectorAll(".called-num").forEach(el => el.className = "");
         generateCartelaGrid();
         startCountdown();
-    }, 5000);
+    }, 4000);
+}
+
+function updateUIWalletValues() {
+    // Syncs the hardcoded values across fields safely
+    document.getElementById("top-main-wallet").innerText = mainWallet;
+    document.getElementById("top-play-wallet").innerText = playWallet;
+    document.getElementById("wallet-main").innerText = mainWallet;
+    document.getElementById("wallet-play").innerText = playWallet;
+    document.getElementById("prof-main").innerText = mainWallet;
+    document.getElementById("prof-play").innerText = playWallet;
 }

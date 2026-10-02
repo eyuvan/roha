@@ -30,14 +30,13 @@
         <section id="game-screen" class="screen hidden">
             <div class="game-header">
                 <h3>🎮 Game ID: #<span id="game-id">0001</span></h3>
-                <!-- Called Number Mini-Screen -->
                 <div id="live-ball-screen" class="live-ball-screen">⌛ በመጠባበቅ ላይ...</div>
             </div>
 
             <!-- 5x5 Matrix Display for Selected Cartelas -->
             <div id="active-cartelas-display"></div>
 
-            <!-- Bingo Board Matrix (B I N G O Columns) -->
+            <!-- Bingo Board Matrix -->
             <div class="bingo-board-container">
                 <h4>የተጠሩ ቁጥሮች ሰሌዳ</h4>
                 <div class="bingo-board">
@@ -57,7 +56,7 @@
                 <p>ዋና ሂሳብ (Main Wallet): <strong><span id="wallet-main">0</span> ETB</strong></p>
                 <p>የመጫወቻ ሂሳብ (Play Wallet): <strong><span id="wallet-play">10</span> ETB</strong></p>
             </div>
-            <p style="font-size: 13px; color: #888;">💡 ገንዘብ ለማስገባት ወይም ለማውጣት ቦቱ ላይ ያለውን ቁጥር 0928361886 ይጠቀሙ።</p>
+            <p style="font-size: 13px; color: #888; margin-top: 10px;">💡 ገንዘብ ለማስገባት ወይም ለማውጣት ቦቱ ላይ ያለውን ቁጥር 0928361886 ይጠቀሙ።</p>
         </section>
 
         <!-- 4. HISTORY SCREEN -->
@@ -72,7 +71,7 @@
         <section id="profile-screen" class="screen hidden">
             <h2>👤 የግል መገለጫ (Profile)</h2>
             <div class="profile-card">
-                <p>🆔 Telegram ID: <span id="prof-tg-id">123456789</span></p>
+                <p>🆔 Telegram ID: <span id="prof-tg-id">—</span></p>
                 <p>📞 ስልክ ቁጥር: <span id="prof-phone">0928361886</span></p>
                 <p>💰 Main Wallet: <span id="prof-main">0</span> ETB</p>
                 <p>🎮 Play Wallet: <span id="prof-play">10</span> ETB</p>
@@ -83,11 +82,12 @@
 
     <!-- BOTTOM NAVIGATION BAR -->
     <nav class="nav-bar">
-        <button class="nav-btn active" onclick="switchTab('game')">🎮 Game</button>
-        <button class="nav-btn" onclick="switchTab('wallet')">👛 Wallet</button>
-        <button class="nav-btn" onclick="switchTab('history')">📜 History</button>
-        <button class="nav-btn" onclick="switchTab('profile')">👤 Profile</button>
+        <button id="btn-game" class="nav-btn active" onclick="switchTab('game')">🎮 Game</button>
+        <button id="btn-wallet" class="nav-btn" onclick="switchTab('wallet')">👛 Wallet</button>
+        <button id="btn-history" class="nav-btn" onclick="switchTab('history')">📜 History</button>
+        <button id="btn-profile" class="nav-btn" onclick="switchTab('profile')">👤 Profile</button>
     </nav>
-	<script src="app.js"></script>
+	<!-- የጃቫስክሪፕት መጥሪያ ፋይል ስም በትክክል app.js መሆኑን ያረጋግጡ -->
+    <script src="app.js"></script>
 </body>
 </html>
