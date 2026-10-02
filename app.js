@@ -1,207 +1,170 @@
-let selectedCards = [];
-let countdownValue = 49;
-let gameIdCounter = 1;
-let timerInterval;
+// State Management
+let mainWallet = 0;
+let playWallet = 10;
+let currentStake = 10;
+let selectedCartelas = [];
+let gameId = 1;
+let countdown = 49;
+let timerInterval = null;
 
-function startAppInit() {
-    const container = document.getElementById('cards-container');
-    if (container) {
-        container.innerHTML = '';
-        for (let i = 1; i <= 600; i++) {
-            let card = document.createElement('div');
-            card.classList.add('card-box');
-            card.innerText = i;
-            
-            // የነበረው ስህተት እዚህ ጋር 'i' በመተካት ተስተካክሏል
-            card.onclick = function() { selectCard(card, i); };
-            
-            container.appendChild(card);
-        }
-    }
-    setupBingoBoard();
+// Initial Setup
+document.addEventListener("DOMContentLoaded", () => {
+    generateCartelaGrid();
     startCountdown();
-}
+    setupBingoBoard();
+});
 
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', startAppInit);
-} else {
-    startAppInit();
-}
-
-try {
-    if (window.Telegram && window.Telegram.WebApp) {
-        window.Telegram.WebApp.ready();
-        window.Telegram.WebApp.expand();
+// Generate 1 to 600 Cartelas
+function generateCartelaGrid() {
+    const grid = document.getElementById("cartela-grid");
+    grid.innerHTML = "";
+    for (let i = 1; i <= 600; i++) {
+        const box = document.createElement("div");
+        box.className = "cartela-box";
+        box.innerText = i;
+        box.onclick = () => selectCartela(i, box);
+        grid.appendChild(box);
     }
-} catch(e) { console.log("Telegram bypassed"); }
+}
 
-function selectCard(element, num) {
-    if (selectedCards.includes(num)) {
-        selectedCards = selectedCards.filter(id => id !== num);
-        element.classList.remove('selected');
+// Handle Cartela Selection Max 3
+function selectCartela(num, element) {
+    if (selectedCartelas.includes(num)) {
+        selectedCartelas = selectedCartelas.filter(id => id !== num);
+        element.classList.remove("selected");
     } else {
-        if (selectedCards.length < 3) {
-            selectedCards.push(num);
-            element.classList.add('selected');
-        } else {
+        if (selectedCartelas.length >= 3) {
             alert("ቢበዛ መምረጥ የሚችሉት 3 ካርቴላ ብቻ ነው!");
+            return;
         }
+        selectedCartelas.push(num);
+        element.classList.add("selected");
     }
+    document.getElementById("selected-count").innerText = selectedCartelas.length;
 }
 
-function startCountdown() {
-    const timerElement = document.getElementById('timer');
-    if(!timerElement) return;
+// Tab Switching Navigation
+function switchTab(tabName) {
+    document.querySelectorAll(".screen").forEach(s => s.classList.add("hidden"));
+    document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
     
-    clearInterval(timerInterval);
+    if (tabName === 'game') {
+        document.getElementById("selection-screen").classList.remove("hidden");
+    } else {
+        document.getElementById(${tabName}-screen).classList.remove("hidden");
+    }
+    // Update visual tab activation button
+}
+
+// Countdown Logic (49 seconds)
+function startCountdown() {
+    countdown = 49;
+    document.getElementById("countdown").innerText = countdown;
+    
     timerInterval = setInterval(() => {
-        countdownValue--;
-        timerElement.innerText = countdownValue;
+        countdown--;
+        document.getElementById("countdown").innerText = countdown;
         
-        if (countdownValue <= 0) {
+        if (countdown <= 0) {
             clearInterval(timerInterval);
-            startBingoGame();
+            transitionToBingoGame();
         }
     }, 1000);
 }
 
-function forceStartGame() {
-    if(selectedCards.length === 0) {
-        alert("እባክዎ መጀመሪያ ቢያንስ 1 ካርቴላ ይምረጡ!");
+// Transition Screen when Timer Hits 0
+function transitionToBingoGame() {
+    document.getElementById("selection-screen").classList.add("hidden");
+    document.getElementById("game-screen").classList.remove("hidden");
+    
+    // Format Game ID to 0001 format
+    document.getElementById("game-id").innerText = String(gameId).padStart(4, '0');
+    
+    renderActiveMatrices();
+    startCallingNumbers();
+}
+
+// Generate 5x5 Matrix for selected items
+function renderActiveMatrices() {
+    const container = document.getElementById("active-cartelas-display");
+    container.innerHTML = "";
+    
+    if(selectedCartelas.length === 0) {
+        container.innerHTML = "<p style='color:red;'>ምንም ካርቴላ አልመረጡም! እባክዎ ቀጣዩን ጨዋታ ይጠብቁ።</p>";
         return;
     }
-    clearInterval(timerInterval);
-    startBingoGame();
-}
 
-function startBingoGame() {
-    document.getElementById('selection-screen').classList.add('hidden');
-    document.getElementById('game-screen').classList.remove('hidden');
-    document.getElementById('game-id').innerText = String(gameIdCounter).padStart(4, '0');
-    
-    generateUserMatrices();
-    simulateBingoCalls();
-}
-
-function setupBingoBoard() {
-    const columns = {
-        'B': { min: 1, max: 15, el: document.getElementById('col-B') },
-        'I': { min: 16, max: 30, el: document.getElementById('col-I') },
-        'N': { min: 31, max: 45, el: document.getElementById('col-N') },
-        'G': { min: 46, max: 60, el: document.getElementById('col-G') },
-        'O': { min: 61, max: 75, el: document.getElementById('col-O') }
-    };
-
-    for (let key in columns) {
-        if (!columns[key].el) continue;
-        columns[key].el.innerHTML = '';
-        for (let i = columns[key].min; i <= columns[key].max; i++) {
-            let numSpan = document.createElement('span');
-            numSpan.id = num-${i};
-            numSpan.innerText = i;
-            columns[key].el.appendChild(numSpan);
+    selectedCartelas.forEach(id => {
+        const wrap = document.createElement("div");
+        wrap.innerHTML = <h4>📋 ካርቴላ #${id}</h4>;
+        const matrix = document.createElement("div");
+        matrix.className = "matrix-5x5";
+        
+        // Populate 25 elements mock numbers
+        for(let i=0; i<25; i++) {
+            const cell = document.createElement("div");
+            cell.className = "matrix-cell";
+            cell.innerText = Math.floor(Math.random() * 75) + 1;
+            matrix.appendChild(cell);
         }
-    }
-}
-
-function generateUserMatrices() {
-    const container = document.getElementById('user-matrices-container');
-    if(!container) return;
-    container.innerHTML = '';
-
-    selectedCards.forEach(cardNum => {
-        let title = document.createElement('div');
-        title.style.fontWeight = 'bold';
-        title.style.margin = '10px 0 5px 0';
-        title.innerText = ካርቴላ #${cardNum};
-        container.appendChild(title);
-
-        let matrixDiv = document.createElement('div');
-        matrixDiv.classList.add('bingo-matrix');
-
-        let bNums = getRandomUniqueNumbers(1, 15, 5);
-        let iNums = getRandomUniqueNumbers(16, 30, 5);
-        let nNums = getRandomUniqueNumbers(31, 45, 5);
-        let gNums = getRandomUniqueNumbers(46, 60, 5);
-        let oNums = getRandomUniqueNumbers(61, 75, 5);
-		for (let row = 0; row < 5; row++) {
-            let rowNums = [bNums[row], iNums[row], nNums[row], gNums[row], oNums[row]];
-            rowNums.forEach((num, colIndex) => {
-                let cell = document.createElement('div');
-                cell.classList.add('matrix-cell');
-                if (row === 2 && colIndex === 2) {
-                    cell.classList.add('free-space');
-                    cell.innerText = "FREE";
-                } else {
-                    cell.innerText = num;
-                    cell.id = card-${cardNum}-${num};
-                }
-                matrixDiv.appendChild(cell);
-            });
-        }
-        container.appendChild(matrixDiv);
+        wrap.appendChild(matrix);
+        container.appendChild(wrap);
     });
 }
 
-// ልዩ ቁጥር ማመንጫ
-function getRandomUniqueNumbers(min, max, count) {
-    let arr = [];
-    while(arr.length < count) {
-        let r = Math.floor(Math.random() * (max - min + 1)) + min;
-        if(!arr.includes(r)) arr.push(r);
-    }
-    return arr;
+// Initialize Board Columns
+function setupBingoBoard() {
+    for(let i=1; i<=15; i++) document.getElementById("col-B").innerHTML += <span id="num-${i}">${i}</span>;
+    for(let i=16; i<=30; i++) document.getElementById("col-I").innerHTML += <span id="num-${i}">${i}</span>;
+	for(let i=31; i<=45; i++) document.getElementById("col-N").innerHTML += <span id="num-${i}">${i}</span>;
+    for(let i=46; i<=60; i++) document.getElementById("col-G").innerHTML += <span id="num-${i}">${i}</span>;
+    for(let i=61; i<=75; i++) document.getElementById("col-O").innerHTML += <span id="num-${i}">${i}</span>;
 }
 
-function simulateBingoCalls() {
-    let allNumbers = Array.from({length: 75}, (_, i) => i + 1);
+// Simulation for calling numbers
+function startCallingNumbers() {
+    let pool = Array.from({length: 75}, (_, i) => i + 1);
+    let calledCount = 0;
+    
     let callInterval = setInterval(() => {
-        if (allNumbers.length === 0) {
+        if (pool.length === 0 || calledCount >= 15) { // Call 15 numbers as a demo
             clearInterval(callInterval);
+            resetToNextGame();
             return;
         }
-        let randomIndex = Math.floor(Math.random() * allNumbers.length);
-        let calledNum = allNumbers.splice(randomIndex, 1);
         
-        let letter = '';
-        if (calledNum <= 15) letter = 'B';
-        else if (calledNum <= 30) letter = 'I';
-        else if (calledNum <= 45) letter = 'N';
-        else if (calledNum <= 60) letter = 'G';
-        else letter = 'O';
-
-        const callScreen = document.getElementById('current-call');
-        if(callScreen) callScreen.innerText = ${letter} - ${calledNum};
+        let randIndex = Math.floor(Math.random() * pool.length);
+        let num = pool.splice(randIndex, 1)[0];
+        calledCount++;
         
-        let boardCell = document.getElementById(num-${calledNum});
-        if (boardCell) boardCell.classList.add('called-active');
-
-        selectedCards.forEach(cardNum => {
-            let userCell = document.getElementById(card-${cardNum}-${calledNum});
-            if (userCell) {
-                userCell.style.backgroundColor = '#e67e22';
-                userCell.style.color = 'white';
-            }
-        });
-    }, 3000);
+        let letter = "";
+        if(num <= 15) letter = "B";
+        else if(num <= 30) letter = "I";
+        else if(num <= 45) letter = "N";
+        else if(num <= 60) letter = "G";
+        else letter = "O";
+        
+        // Show in screen
+        document.getElementById("live-ball-screen").innerText = ${letter} - ${num};
+        
+        // Cross out on structural list board
+        let boardNum = document.getElementById(num-${num});
+        if(boardNum) boardNum.className = "called-num";
+        
+    }, 3000); // Calls every 3 seconds
 }
 
-function switchTab(tabName) {
-    const tabs = ['game-tab', 'wallet-tab', 'history-tab', 'profile-tab'];
-    const buttons = ['btn-game', 'btn-wallet', 'btn-history', 'btn-profile'];
-
-    tabs.forEach(id => {
-        const el = document.getElementById(id);
-        if(el) el.classList.add('hidden');
-    });
-    buttons.forEach(id => {
-        const btn = document.getElementById(id);
-        if(btn) btn.classList.remove('active-tab');
-    });
-
-    const targetTab = document.getElementById(${tabName}-tab);
-    const targetBtn = document.getElementById(btn-${tabName});
-    
-    if(targetTab) targetTab.classList.remove('hidden');
-    if(targetBtn) targetBtn.classList.add('active-tab');
+function resetToNextGame() {
+    setTimeout(() => {
+        gameId++;
+        selectedCartelas = [];
+        document.getElementById("selected-count").innerText = "0";
+        document.getElementById("game-screen").classList.add("hidden");
+        document.getElementById("selection-screen").classList.remove("hidden");
+        
+        // Reset Board classes
+        document.querySelectorAll(".called-num").forEach(el => el.className = "");
+        generateCartelaGrid();
+        startCountdown();
+    }, 5000);
 }

@@ -1,182 +1,180 @@
-/* አጠቃላይ የገጽ ዲዛይን */
+:root {
+    --primary: #0076ff;
+    --bg-dark: #121212;
+    --card-bg: #1e1e1e;
+    --text: #ffffff;
+    --accent: #ffcc00;
+}
+
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
-    padding: 0;
-    background-color: #f4f6f9;
-    color: #333;
-    padding-bottom: 70px; /* ለታችኛው ናቪጌሽን ቦታ መተው */
-}
-
-/* የላይኛው ዳሽቦርድ (Top Dashboard) */
-#top-dashboard {
-    background: linear-gradient(135deg, #1e3c72, #2a5298);
-    color: white;
-    padding: 15px;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background-color: var(--bg-dark);
+    color: var(--text);
     display: flex;
-    justify-content: space-around;
+    flex-direction: column;
+    height: 100vh;
+    overflow-x: hidden;
+}
+
+/* Status Header */
+.status-bar {
+    background: var(--card-bg);
+    padding: 12px;
+    display: flex;
+    justify-content: space-between;
     align-items: center;
-    font-weight: bold;
+    border-bottom: 2px solid #333;
     font-size: 14px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    position: sticky;
-    top: 0;
-    z-index: 1000;
+    font-weight: bold;
 }
-
-#timer-box {
-    background-color: #e74c3c;
-    padding: 5px 10px;
-    border-radius: 5px;
-    animation: pulse 1s infinite alternate;
-}
-
-/* ገጾችን የመደበቂያ ሎጂክ (ይህ ነው ሁሉንም በአንድ ላይ እንዳይወጡ የሚያደርገው) */
-.hidden {
-    display: none !important;
+.timer-box {
+    background: #ff3b30;
+    padding: 4px 10px;
+    border-radius: 6px;
 }
 
 main {
-    padding: 15px;
-}
-
-/* ከ 1 - 600 የካርቴላ መደርደሪያ ግሪድ (Grid) */
-#cards-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
-    gap: 8px;
-    max-height: 400px;
+    flex: 1;
     overflow-y: auto;
-    background: white;
-    padding: 10px;
-    border-radius: 8px;
-    box-shadow: inset 0 0 5px rgba(0,0,0,0.1);
+    padding: 15px;
+    padding-bottom: 80px;
 }
 
-.card-box {
-    background-color: #f1f2f6;
-    border: 2px solid #ced6e0;
-    padding: 12px 5px;
-    text-align: center;
-    font-weight: bold;
-    cursor: pointer;
-    border-radius: 6px;
-    transition: all 0.2s ease;
+/* ይሄ ክላስ ነው ገጾችን የሚደብቀው - በጣም አስፈላጊ ነው */
+.hidden { 
+    display: none !important; 
 }
 
-/* ተጫዋች ካርቴላ ሲመርጥ ቀለሙ እንዲቀየር */
-.card-box.selected {
-    background-color: #2ecc71;
-    color: white;
-    border-color: #27ae60;
-    transform: scale(1.05);
+.screen { 
+    transition: all 0.3s ease; 
 }
 
-/* የማረጋገጫ ቁልፍ */
-#confirm-selection-btn {
-    display: block;
-    width: 100%;
-    background-color: #2ecc71;
-    color: white;
-    border: none;
-    padding: 12px;
-    font-size: 16px;
-    font-weight: bold;
-    border-radius: 6px;
+/* ካርቴላ መምረጫ ሳጥኖች (ረዣዥም እና ሰፋፊ የተደረጉ) */
+.cartela-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
     margin-top: 15px;
+}
+.cartela-box {
+    background: #2a2a2a;
+    border: 1px solid #444;
+    border-radius: 8px;
+    text-align: center;
+    padding: 25px 10px; /* ሳጥኖቹን ረዣዥም የሚያደርገው ይሄ ነው */
+    font-weight: bold;
     cursor: pointer;
+    font-size: 18px;
+    transition: 0.2s;
+}
+.cartela-box.selected {
+    background: var(--primary);
+    border-color: #fff;
+    transform: scale(0.95);
 }
 
-/* የቢንጎ መጥሪያ ትንሽ ስክሪን */
-#called-number-screen {
-    background-color: #2c3e50;
-    color: #f1c40f;
+/* ቢንጎ መጥሪያ ትንሽ ስክሪን */
+.live-ball-screen {
+    background: #000;
+    color: var(--accent);
     text-align: center;
-    padding: 20px;
     font-size: 28px;
     font-weight: bold;
-    border-radius: 8px;
+    padding: 15px;
+    border-radius: 10px;
     margin: 15px 0;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    border: 2px solid var(--accent);
 }
 
-/* የቢንጎ ሰሌዳ ዓምዶች (B I N G O Columns) */
-.bingo-board {
-    display: flex;
-    justify-content: space-between;
-    background: white;
+/* 5x5 የካርቴላ ሰሌዳ */
+.matrix-5x5 {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 5px;
+    background: #252525;
     padding: 10px;
     border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    margin-bottom: 15px;
 }
-
-.column {
-    flex: 1;
+.matrix-cell {
+    background: #3a3a3a;
     text-align: center;
-    margin: 0 2px;
-}
-
-.column h3 {
-    background-color: #34495e;
-    color: white;
-    margin: 0 0 5px 0;
-    padding: 5px 0;
+    padding: 15px 5px; /* ረዣዥም ማትሪክስ ሳጥኖች */
+    font-size: 16px;
+    font-weight: bold;
     border-radius: 4px;
 }
+.matrix-cell.hit {
+    background: #34c759;
+    color: #fff;
+}
 
-.num-list {
+/* የቢንጎ ዋና ሰሌዳ (B I N G O) */
+.bingo-board {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    background: #1a1a1a;
+    padding: 10px;
+    border-radius: 8px;
+}
+.board-col {
+    background: #262626;
+    border-radius: 6px;
+    text-align: center;
+}
+.col-letter {
+    background: var(--primary);
+    color: white;
+    padding: 8px 0;
+    font-weight: bold;
+    border-radius: 6px 6px 0 0;
+}
+.col-numbers {
+    padding: 8px 4px;
+    font-size: 14px;
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 5px;
 }
-
-.num-list span {
-    background-color: #f8f9fa;
-    border: 1px solid #dcdde1;
-    padding: 4px 0;
-    font-size: 13px;
-    font-weight: bold;
+.called-num {
+    background: #444;
+    margin: 2px 0;
     border-radius: 3px;
+    text-decoration: line-through;
+    color: var(--accent);
 }
 
-/* ቁጥሩ ሲጠራ በሰሌዳው ላይ የሚበራው ቀለም */
-.num-list span.called-active {
-    background-color: #e67e22;
-    color: white;
-    border-color: #d35400;
-}
-
-/* የታችኛው ናቪጌሽን ባር (Bottom Navigation Bar) */
+/* የበታች ማውጫ (Bottom Navigation Bar) */
 .nav-bar {
     position: fixed;
     bottom: 0;
     left: 0;
     width: 100%;
-    background-color: white;
+    background: var(--card-bg);
     display: flex;
     justify-content: space-around;
-    box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+    border-top: 2px solid #333;
+    padding: 15px 0;
     z-index: 1000;
 }
-
-.nav-bar button {
-    flex: 1;
+.nav-btn {
     background: none;
     border: none;
-    padding: 15px 0;
-    font-size: 14px;
+    color: #888;
+    font-size: 15px;
     font-weight: bold;
-    color: #7f8c8d;
     cursor: pointer;
-    transition: color 0.2s;
+}
+.nav-btn.active { 
+    color: var(--primary); 
 }
 
-.nav-bar button:hover, .nav-bar button:focus {
-    color: #1e3c72;
-    background-color: #f8f9fa;
-}
-
-@keyframes pulse {
-    from { opacity: 1; }
-    to { opacity: 0.8; }
+.wallet-card, .profile-card {
+    background: var(--card-bg);
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid #333;
+    margin-top: 15px;
 }
