@@ -1,190 +1,207 @@
-let selectedCartelas = [];
-let timeLeft = 49;
-let selectionOpen = true;
-let betAmount = 10; // 💥 መነሻ የመወራረጃ መጠን 10 ብር
+let selectedCards = [];
+let countdownValue = 49;
+let gameIdCounter = 1;
+let timerInterval;
 
-// 💥 የፓይተን ሰርቨር መገናኛ ሊንክ (አይፒ አድራሻህ)
-// ✅ አሁን የምትተካው ትክክለኛው አዲሱ ሊንክ (በፎቶው መሰረት)፦
-const API_BASE_URL = "http://192.168.83.45:5000";
-const urlParams = new URLSearchParams(window.location.search);
-const TelegramUserID = urlParams.get('user_id') || "12345"; 
-
-window.onload = function() {
-    createAllCartelas();
-    setupBingoBoardNumbers();
-    startCountdown(); 
-    loadRealBalance();
-};
-
-// 💥 አዲስ የተጨመረ፦ የመወራረጃ መጠንን (10 ብር ወይም 20 ብር) መቀየሪያ
-function setBetAmount(amount) {
-    if (selectedCartelas.length > 0) {
-        alert("ማሳሰቢያ፦ ካርቴላ መምረጥ ስለጀመሩ የመወራረጃ መጠን መቀየር አይችሉም!");
-        return;
-    }
-    betAmount = amount;
-    document.getElementById('current-bet-display').innerText = amount;
-    
-    // የበተኖቹን ከለር ማስተካከያ
-    document.getElementById('btn-bet-10').classList.remove('active');
-    document.getElementById('btn-bet-20').classList.remove('active');
-    document.getElementById('btn-bet-' + amount).classList.add('active');
-}
-
-function createAllCartelas() {
-    const cartelaList = document.getElementById('cartela-list');
-    if (cartelaList) {
-        cartelaList.innerHTML = ""; 
+function startAppInit() {
+    const container = document.getElementById('cards-container');
+    if (container) {
+        container.innerHTML = '';
         for (let i = 1; i <= 600; i++) {
-            let box = document.createElement('div');
-            box.className = 'cartela-box';
-            box.innerText = i;
-            box.onclick = function() { selectCartela(i, box); };
-            cartelaList.appendChild(box);
+            let card = document.createElement('div');
+            card.classList.add('card-box');
+            card.innerText = i;
+            
+            // የነበረው ስህተት እዚህ ጋር 'i' በመተካት ተስተካክሏል
+            card.onclick = function() { selectCard(card, i); };
+            
+            container.appendChild(card);
         }
     }
+    setupBingoBoard();
+    startCountdown();
 }
 
-// 💥 ከፓይተን ዳታቤዝ ላይ እውነተኛውን ባላንስ አምጥቶ ማሳያ API
-function loadRealBalance() {
-    fetch(${API_BASE_URL}/api/get_balance?user_id=${TelegramUserID})
-        .then(res => res.json())
-        .then(data => {
-            const mainW = document.getElementById('main-wallet-amount');
-            const playW = document.getElementById('play-wallet-amount');
-            if (mainW) mainW.innerText = data.main_wallet.toFixed(2) + " ብር";
-            if (playW) playW.innerText = data.play_wallet.toFixed(2) + " ብር";
-        }).catch(err => console.log("የባላንስ ግንኙነት ስህተት፦", err));
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', startAppInit);
+} else {
+    startAppInit();
 }
 
-// 💥 ካርቴላ በተመረጠ ቁጥር በተመረጠው መጠን (10 ወይም 20) ከዳታቤዝ ላይ ብር የሚቀንስ API
-function buyCartelaOnDatabase() {
-    fetch(${API_BASE_URL}/api/buy_cartela, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_id: TelegramUserID, bet_amount: betAmount })
-    })
-    .then(res => res.json())
-    .then(data => {
-        if(data.success) {
-            document.getElementById('main-wallet-amount').innerText = data.main_wallet.toFixed(2) + " ብር";
-            document.getElementById('play-wallet-amount').innerText = data.play_wallet.toFixed(2) + " ብር";
-        } else {
-            alert(data.message);
-            // ብር ከሌለው ምርጫውን በፈርንትአንድ ላይ መሰረዝ
-            location.reload();
-        }
-    }).catch(err => console.log("የመግዣ ግንኙነት ስህተት፦", err));
-}
+try {
+    if (window.Telegram && window.Telegram.WebApp) {
+        window.Telegram.WebApp.ready();
+        window.Telegram.WebApp.expand();
+    }
+} catch(e) { console.log("Telegram bypassed"); }
 
-function selectCartela(id, element) {
-    if (!selectionOpen) return;
-    if (selectedCartelas.includes(id)) {
-        // ካርቴላውን መልሶ የመሰረዝ ህግ (በቀጣይ የብር መመለሻ API ይደረግለታል)
-        selectedCartelas = selectedCartelas.filter(item => item !== id);
+function selectCard(element, num) {
+    if (selectedCards.includes(num)) {
+        selectedCards = selectedCards.filter(id => id !== num);
         element.classList.remove('selected');
     } else {
-        if (selectedCartelas.length >= 5) {
-            alert("መምረጥ የሚችሉት እስከ 5 ካርቴላ ብቻ ነው!");
-            return;
-        }
-        
-        // 💥 ካርቴላ በተጫነ ቁጥር የመረጠውን የመወራረጃ ብር (10 ወይም 20) በAPI መቀነስ
-        buyCartelaOnDatabase();
-        
-        // የመወራረጃ ሰሌዳውን እንዳይቀይሩት መቆለፍ
-        document.getElementById('btn-bet-10').disabled = true;
-        document.getElementById('btn-bet-20').disabled = true;
-
-        selectedCartelas.push(id);
-        element.classList.add('selected');
-        generate5x5Grid(); 
-    }
-}
-
-function generate5x5Grid() {
-    const grid = document.getElementById('bingo-grid');
-    if (document.getElementById('selected-cartela-display')) document.getElementById('selected-cartela-display').classList.remove('hidden');
-	if (grid) {
-        grid.innerHTML = '';
-        for (let i = 1; i <= 25; i++) {
-            let cell = document.createElement('div');
-            cell.className = 'grid-cell';
-            cell.innerText = i === 13 ? "FREE" : Math.floor(Math.random() * 75) + 1;
-            grid.appendChild(cell);
+        if (selectedCards.length < 3) {
+            selectedCards.push(num);
+            element.classList.add('selected');
+        } else {
+            alert("ቢበዛ መምረጥ የሚችሉት 3 ካርቴላ ብቻ ነው!");
         }
     }
 }
 
 function startCountdown() {
     const timerElement = document.getElementById('timer');
-    const timerInterval = setInterval(function() {
-        timeLeft--;
-        if (timerElement) timerElement.innerText = timeLeft;
-        if (timeLeft <= 0) {
+    if(!timerElement) return;
+    
+    clearInterval(timerInterval);
+    timerInterval = setInterval(() => {
+        countdownValue--;
+        timerElement.innerText = countdownValue;
+        
+        if (countdownValue <= 0) {
             clearInterval(timerInterval);
-            selectionOpen = false;
-            document.getElementById('timer-box').innerText = "ምርጫ ተዘግቷል! ጨዋታው ተጀምሯል...";
-            document.getElementById('cartela-list').classList.add('hidden');
-            document.getElementById('select-title').classList.add('hidden');
-            document.getElementById('bet-selection-container').classList.add('hidden'); // መወራረጃውን መደበቅ
-            document.getElementById('bingo-board').classList.remove('hidden');
-            startBingoCalling(); 
+            startBingoGame();
         }
     }, 1000);
 }
 
-function setupBingoBoardNumbers() {
-    const columns = {'B': {s:1, e:15, id:'col-B'}, 'I': {s:16, e:30, id:'col-I'}, 'N': {s:31, e:45, id:'col-N'}, 'G': {s:46, e:60, id:'col-G'}, 'O': {s:61, e:75, id:'col-O'}};
+function forceStartGame() {
+    if(selectedCards.length === 0) {
+        alert("እባክዎ መጀመሪያ ቢያንስ 1 ካርቴላ ይምረጡ!");
+        return;
+    }
+    clearInterval(timerInterval);
+    startBingoGame();
+}
+
+function startBingoGame() {
+    document.getElementById('selection-screen').classList.add('hidden');
+    document.getElementById('game-screen').classList.remove('hidden');
+    document.getElementById('game-id').innerText = String(gameIdCounter).padStart(4, '0');
+    
+    generateUserMatrices();
+    simulateBingoCalls();
+}
+
+function setupBingoBoard() {
+    const columns = {
+        'B': { min: 1, max: 15, el: document.getElementById('col-B') },
+        'I': { min: 16, max: 30, el: document.getElementById('col-I') },
+        'N': { min: 31, max: 45, el: document.getElementById('col-N') },
+        'G': { min: 46, max: 60, el: document.getElementById('col-G') },
+        'O': { min: 61, max: 75, el: document.getElementById('col-O') }
+    };
+
     for (let key in columns) {
-        let col = columns[key];
-        let el = document.getElementById(col.id);
-        if (el) {
-            el.innerHTML = "";
-            for (let n = col.s; n <= col.e; n++) {
-                let numSpan = document.createElement('div');
-                numSpan.className = 'board-num';
-                numSpan.id = 'b-num-' + n;
-                numSpan.innerText = n;
-                el.appendChild(numSpan);
-            }
+        if (!columns[key].el) continue;
+        columns[key].el.innerHTML = '';
+        for (let i = columns[key].min; i <= columns[key].max; i++) {
+            let numSpan = document.createElement('span');
+            numSpan.id = num-${i};
+            numSpan.innerText = i;
+            columns[key].el.appendChild(numSpan);
         }
     }
 }
 
-function speakBingo(text) {
-    if ('speechSynthesis' in window) {
-        let utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'en-US'; utterance.rate = 0.9;
-        let voices = window.speechSynthesis.getVoices();
-        let femaleVoice = voices.find(v => v.name.includes('Google US English')  v.name.includes('Zira')  v.name.includes('Female'));
-        if (femaleVoice) utterance.voice = femaleVoice;
-        window.speechSynthesis.speak(utterance);
-    }
+function generateUserMatrices() {
+    const container = document.getElementById('user-matrices-container');
+    if(!container) return;
+    container.innerHTML = '';
+
+    selectedCards.forEach(cardNum => {
+        let title = document.createElement('div');
+        title.style.fontWeight = 'bold';
+        title.style.margin = '10px 0 5px 0';
+        title.innerText = ካርቴላ #${cardNum};
+        container.appendChild(title);
+
+        let matrixDiv = document.createElement('div');
+        matrixDiv.classList.add('bingo-matrix');
+
+        let bNums = getRandomUniqueNumbers(1, 15, 5);
+        let iNums = getRandomUniqueNumbers(16, 30, 5);
+        let nNums = getRandomUniqueNumbers(31, 45, 5);
+        let gNums = getRandomUniqueNumbers(46, 60, 5);
+        let oNums = getRandomUniqueNumbers(61, 75, 5);
+		for (let row = 0; row < 5; row++) {
+            let rowNums = [bNums[row], iNums[row], nNums[row], gNums[row], oNums[row]];
+            rowNums.forEach((num, colIndex) => {
+                let cell = document.createElement('div');
+                cell.classList.add('matrix-cell');
+                if (row === 2 && colIndex === 2) {
+                    cell.classList.add('free-space');
+                    cell.innerText = "FREE";
+                } else {
+                    cell.innerText = num;
+                    cell.id = card-${cardNum}-${num};
+                }
+                matrixDiv.appendChild(cell);
+            });
+        }
+        container.appendChild(matrixDiv);
+    });
 }
 
-function startBingoCalling() {
-    let allNumbers = [];
-    for (let i = 1; i <= 75; i++) allNumbers.push(i);
-    allNumbers.sort(() => Math.random() - 0.5);
-    let currentIndex = 0;
-    const callingInterval = setInterval(function() {
-        if (currentIndex >= allNumbers.length) { clearInterval(callingInterval); return; }
-        let num = allNumbers[currentIndex];
-        let letter = num<=15?"B":num<=30?"I":num<=45?"N":num<=60?"G":"O";
-        document.getElementById('called-number').innerText = letter + "-" + num;
-        speakBingo(letter + " " + num);
-        const target = document.getElementById('b-num-' + num);
-        if (target) target.classList.add('highlighted');
-        currentIndex++;
-    }, 4000); 
+// ልዩ ቁጥር ማመንጫ
+function getRandomUniqueNumbers(min, max, count) {
+    let arr = [];
+    while(arr.length < count) {
+        let r = Math.floor(Math.random() * (max - min + 1)) + min;
+        if(!arr.includes(r)) arr.push(r);
+    }
+    return arr;
+}
+
+function simulateBingoCalls() {
+    let allNumbers = Array.from({length: 75}, (_, i) => i + 1);
+    let callInterval = setInterval(() => {
+        if (allNumbers.length === 0) {
+            clearInterval(callInterval);
+            return;
+        }
+        let randomIndex = Math.floor(Math.random() * allNumbers.length);
+        let calledNum = allNumbers.splice(randomIndex, 1);
+        
+        let letter = '';
+        if (calledNum <= 15) letter = 'B';
+        else if (calledNum <= 30) letter = 'I';
+        else if (calledNum <= 45) letter = 'N';
+        else if (calledNum <= 60) letter = 'G';
+        else letter = 'O';
+
+        const callScreen = document.getElementById('current-call');
+        if(callScreen) callScreen.innerText = ${letter} - ${calledNum};
+        
+        let boardCell = document.getElementById(num-${calledNum});
+        if (boardCell) boardCell.classList.add('called-active');
+
+        selectedCards.forEach(cardNum => {
+            let userCell = document.getElementById(card-${cardNum}-${calledNum});
+            if (userCell) {
+                userCell.style.backgroundColor = '#e67e22';
+                userCell.style.color = 'white';
+            }
+        });
+    }, 3000);
 }
 
 function switchTab(tabName) {
-    ['game', 'wallet', 'history', 'profile'].forEach(t => {
-        document.getElementById(t + '-tab').classList.add('hidden');
-        document.getElementById('nav-' + t).classList.remove('active');
+    const tabs = ['game-tab', 'wallet-tab', 'history-tab', 'profile-tab'];
+    const buttons = ['btn-game', 'btn-wallet', 'btn-history', 'btn-profile'];
+
+    tabs.forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.classList.add('hidden');
     });
-    document.getElementById(tabName + '-tab').classList.remove('hidden');
-    document.getElementById('nav-' + tabName).classList.add('active');
+    buttons.forEach(id => {
+        const btn = document.getElementById(id);
+        if(btn) btn.classList.remove('active-tab');
+    });
+
+    const targetTab = document.getElementById(${tabName}-tab);
+    const targetBtn = document.getElementById(btn-${tabName});
+    
+    if(targetTab) targetTab.classList.remove('hidden');
+    if(targetBtn) targetBtn.classList.add('active-tab');
 }
